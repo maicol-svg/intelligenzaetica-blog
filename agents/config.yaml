@@ -1,0 +1,120 @@
+# Configurazione Sistema Agenti IA - IntelligenzaEtica.blog
+
+# API Configuration
+api:
+  provider: "anthropic"
+  # I modelli da usare per ogni tipo di task
+  models:
+    writer: "claude-3-5-haiku-20241022"  # Economico per scrittura
+    editor: "claude-3-5-sonnet-20241022"  # Più capace per editing
+  max_tokens:
+    article: 4000
+    edit: 2000
+  temperature:
+    writer: 0.7  # Più creativo
+    editor: 0.3  # Più preciso
+
+# Team Editoriale
+agents:
+  marco:
+    name: "Marco"
+    role: "Giornalista IA - News & Attualità"
+    specializations:
+      - "tech"
+      - "finanza"
+    style: "informativo, dinamico, attuale"
+    prompt_file: "prompts/marco.md"
+
+  elena:
+    name: "Elena"
+    role: "Giornalista IA - Tutorial & Guide"
+    specializations:
+      - "tutorial"
+      - "ecosostenibile"
+    style: "pratico, step-by-step, accessibile"
+    prompt_file: "prompts/elena.md"
+
+  luca:
+    name: "Luca"
+    role: "Giornalista IA - Etica & Opinioni"
+    specializations:
+      - "ia-etica"
+      - "psicologia"
+    style: "riflessivo, approfondito, conversazionale"
+    prompt_file: "prompts/luca.md"
+
+  sofia:
+    name: "Sofia"
+    role: "Editor IA"
+    specializations:
+      - "editing"
+      - "seo"
+    style: "preciso, ottimizzato, professionale"
+    prompt_file: "prompts/sofia.md"
+
+# Categorie
+categories:
+  ia-etica:
+    label: "IA & Etica"
+    default_agent: "luca"
+    frequency_per_week: 3
+
+  tech:
+    label: "Tech & Innovazione"
+    default_agent: "marco"
+    frequency_per_week: 4
+
+  tutorial:
+    label: "Tutorial & Guide"
+    default_agent: "elena"
+    frequency_per_week: 2
+
+  finanza:
+    label: "Finanza & Lavoro"
+    default_agent: "marco"
+    frequency_per_week: 2
+
+  psicologia:
+    label: "Psicologia & IA"
+    default_agent: "luca"
+    frequency_per_week: 1
+
+  ecosostenibile:
+    label: "IA Ecosostenibile"
+    default_agent: "elena"
+    frequency_per_week: 1
+
+# Contenuti sensibili (richiedono review umana)
+sensitive_topics:
+  - "politica"
+  - "religione"
+  - "salute"
+  - "investimenti finanziari"
+  - "dati personali"
+  - "minori"
+
+# Parole chiave che triggerano review umana
+sensitive_keywords:
+  - "consiglio di investire"
+  - "dovresti comprare"
+  - "cura per"
+  - "trattamento medico"
+  - "partito politico"
+
+# Output
+output:
+  articles_dir: "../content/articles"
+  drafts_dir: "../content/drafts"
+  date_format: "%Y-%m-%d"
+
+# Limiti
+limits:
+  min_words: 800
+  max_words: 2000
+  articles_per_day: 2
+
+# Notifiche
+notifications:
+  email: "info@intelligenzaetica.blog"
+  send_on_review: true
+  send_on_error: true
