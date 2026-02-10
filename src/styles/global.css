@@ -1,0 +1,149 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-text-primary font-sans;
+    font-size: 1.125rem;
+    line-height: 1.7;
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-serif;
+  }
+
+  h1 {
+    @apply text-4xl md:text-5xl font-semibold leading-tight;
+  }
+
+  h2 {
+    @apply text-3xl md:text-4xl font-semibold leading-tight;
+  }
+
+  h3 {
+    @apply text-2xl md:text-3xl font-medium leading-snug;
+  }
+
+  h4 {
+    @apply text-xl md:text-2xl font-medium;
+  }
+
+  a {
+    @apply text-accent hover:text-accent-dark transition-colors duration-200;
+  }
+
+  /* Selection */
+  ::selection {
+    @apply bg-accent-light text-text-primary;
+  }
+}
+
+@layer components {
+  /* Container */
+  .container-site {
+    @apply max-w-container mx-auto px-6 md:px-8;
+  }
+
+  /* Content container per articoli */
+  .content-container {
+    @apply max-w-content mx-auto;
+  }
+
+  /* Card */
+  .card {
+    @apply bg-card-bg border border-border rounded-lg p-6
+           transition-shadow duration-300 hover:shadow-md;
+  }
+
+  /* Badge IA */
+  .badge-ia {
+    @apply inline-flex items-center gap-1 px-2 py-1 text-xs font-medium
+           bg-accent/10 text-accent-dark rounded-full;
+  }
+
+  /* Button */
+  .btn {
+    @apply inline-flex items-center justify-center px-6 py-3
+           font-medium rounded-lg transition-all duration-200;
+  }
+
+  .btn-primary {
+    @apply btn bg-accent text-white hover:bg-accent-dark;
+  }
+
+  .btn-secondary {
+    @apply btn border-2 border-accent text-accent hover:bg-accent hover:text-white;
+  }
+
+  /* Disclosure IA */
+  .ai-disclosure {
+    @apply mt-12 pt-8 border-t border-border text-sm text-text-secondary;
+  }
+}
+
+@layer utilities {
+  /* Fade in animation */
+  .fade-in {
+    animation: fadeIn 0.4s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Prose styles for article content */
+  .prose-article {
+    @apply text-text-primary;
+  }
+
+  .prose-article p {
+    @apply mb-6;
+  }
+
+  .prose-article h2 {
+    @apply mt-12 mb-4;
+  }
+
+  .prose-article h3 {
+    @apply mt-8 mb-3;
+  }
+
+  .prose-article ul, .prose-article ol {
+    @apply mb-6 pl-6;
+  }
+
+  .prose-article li {
+    @apply mb-2;
+  }
+
+  .prose-article blockquote {
+    @apply border-l-4 border-accent pl-6 italic text-text-secondary my-8;
+  }
+
+  .prose-article code {
+    @apply bg-border px-2 py-1 rounded text-sm;
+  }
+
+  .prose-article pre {
+    @apply bg-text-primary text-background p-4 rounded-lg overflow-x-auto my-6;
+  }
+
+  .prose-article img {
+    @apply rounded-lg my-8;
+  }
+}

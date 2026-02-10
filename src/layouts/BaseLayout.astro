@@ -1,0 +1,114 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+  image?: string;
+}
+
+const {
+  title,
+  description = "Il primo giornale online italiano interamente gestito da intelligenza artificiale, dedicato all'informazione etica e consapevole sull'IA.",
+  image = "/images/og-default.jpg"
+} = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+---
+
+<!DOCTYPE html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="canonical" href={canonicalURL} />
+
+    <!-- Primary Meta Tags -->
+    <title>{title} | Intelligenza Etica</title>
+    <meta name="title" content={`${title} | Intelligenza Etica`} />
+    <meta name="description" content={description} />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={`${title} | Intelligenza Etica`} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={new URL(image, Astro.site)} />
+    <meta property="og:locale" content="it_IT" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content={canonicalURL} />
+    <meta property="twitter:title" content={`${title} | Intelligenza Etica`} />
+    <meta property="twitter:description" content={description} />
+    <meta property="twitter:image" content={new URL(image, Astro.site)} />
+
+    <!-- Preconnect for fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <meta name="generator" content={Astro.generator} />
+  </head>
+  <body class="min-h-screen flex flex-col">
+    <slot name="header">
+      <header class="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
+        <nav class="container-site py-4 flex items-center justify-between">
+          <a href="/" class="flex items-center gap-2 text-text-primary hover:text-accent transition-colors">
+            <span class="font-serif text-xl font-semibold">Intelligenza Etica</span>
+          </a>
+
+          <div class="flex items-center gap-6 text-sm">
+            <a href="/categoria/ia-etica" class="hover:text-accent">IA & Etica</a>
+            <a href="/categoria/tech" class="hover:text-accent">Tech</a>
+            <a href="/categoria/tutorial" class="hover:text-accent">Tutorial</a>
+            <a href="/chi-siamo" class="hover:text-accent">Chi Siamo</a>
+          </div>
+        </nav>
+      </header>
+    </slot>
+
+    <main class="flex-1">
+      <slot />
+    </main>
+
+    <footer class="bg-text-primary text-background mt-auto">
+      <div class="container-site py-12">
+        <div class="grid md:grid-cols-3 gap-8">
+          <!-- Brand -->
+          <div>
+            <h3 class="font-serif text-xl mb-4">Intelligenza Etica</h3>
+            <p class="text-background/70 text-sm mb-4">
+              Il primo giornale online italiano interamente gestito da intelligenza artificiale.
+            </p>
+            <span class="badge-ia bg-accent/20">Contenuti generati da IA</span>
+          </div>
+
+          <!-- Links -->
+          <div>
+            <h4 class="font-medium mb-4">Navigazione</h4>
+            <ul class="space-y-2 text-sm text-background/70">
+              <li><a href="/" class="hover:text-background">Home</a></li>
+              <li><a href="/chi-siamo" class="hover:text-background">Chi Siamo</a></li>
+              <li><a href="/contatti" class="hover:text-background">Contatti</a></li>
+            </ul>
+          </div>
+
+          <!-- Legal -->
+          <div>
+            <h4 class="font-medium mb-4">Informazioni Legali</h4>
+            <ul class="space-y-2 text-sm text-background/70">
+              <li><a href="/privacy-policy" class="hover:text-background">Privacy Policy</a></li>
+              <li><a href="/cookie-policy" class="hover:text-background">Cookie Policy</a></li>
+              <li><a href="/termini-condizioni" class="hover:text-background">Termini e Condizioni</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="border-t border-background/20 mt-8 pt-8 text-center text-sm text-background/50">
+          <p>&copy; {new Date().getFullYear()} Intelligenza Etica. Tutti i contenuti sono generati da IA e supervisionati da umani.</p>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

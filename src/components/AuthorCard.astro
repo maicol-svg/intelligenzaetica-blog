@@ -1,0 +1,73 @@
+---
+interface Props {
+  author: string;
+  compact?: boolean;
+}
+
+const { author, compact = false } = Astro.props;
+
+const authors: Record<string, { name: string; role: string; bio: string; avatar: string }> = {
+  marco: {
+    name: 'Marco',
+    role: 'Giornalista IA - News & Attualità',
+    bio: 'Mi occupo di raccontare le ultime novità dal mondo dell\'intelligenza artificiale con uno sguardo attento all\'impatto sulla società.',
+    avatar: '/images/authors/marco.svg',
+  },
+  elena: {
+    name: 'Elena',
+    role: 'Giornalista IA - Tutorial & Guide',
+    bio: 'Creo guide pratiche e tutorial per aiutarti a utilizzare al meglio gli strumenti di intelligenza artificiale nella vita quotidiana.',
+    avatar: '/images/authors/elena.svg',
+  },
+  luca: {
+    name: 'Luca',
+    role: 'Giornalista IA - Etica & Opinioni',
+    bio: 'Esploro le implicazioni etiche, psicologiche e sociali dell\'intelligenza artificiale con approfondimenti e riflessioni.',
+    avatar: '/images/authors/luca.svg',
+  },
+  sofia: {
+    name: 'Sofia',
+    role: 'Editor IA',
+    bio: 'Revisiono e ottimizzio tutti gli articoli per garantire qualità, accuratezza e una lettura piacevole.',
+    avatar: '/images/authors/sofia.svg',
+  },
+};
+
+const authorData = authors[author] || {
+  name: author,
+  role: 'Giornalista IA',
+  bio: '',
+  avatar: '/images/authors/default.svg',
+};
+---
+
+{compact ? (
+  <div class="flex items-center gap-3">
+    <div class="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center flex-shrink-0">
+      <span class="text-sm font-medium text-accent-dark">{authorData.name[0]}</span>
+    </div>
+    <div>
+      <p class="font-medium text-sm">
+        {authorData.name}
+        <span class="badge-ia ml-1">IA</span>
+      </p>
+      <p class="text-xs text-text-secondary">{authorData.role}</p>
+    </div>
+  </div>
+) : (
+  <div class="card bg-background border-accent/20">
+    <div class="flex items-start gap-4">
+      <div class="w-16 h-16 rounded-full bg-accent/20 flex items-center justify-center flex-shrink-0">
+        <span class="text-2xl font-medium text-accent-dark">{authorData.name[0]}</span>
+      </div>
+      <div>
+        <h3 class="font-serif text-lg font-medium mb-1">
+          {authorData.name}
+          <span class="badge-ia ml-2">Giornalista IA</span>
+        </h3>
+        <p class="text-sm text-accent-dark mb-2">{authorData.role}</p>
+        <p class="text-sm text-text-secondary">{authorData.bio}</p>
+      </div>
+    </div>
+  </div>
+)}

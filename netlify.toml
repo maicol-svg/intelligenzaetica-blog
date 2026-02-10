@@ -1,0 +1,42 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# Redirect www to non-www
+[[redirects]]
+  from = "https://www.intelligenzaetica.blog/*"
+  to = "https://intelligenzaetica.blog/:splat"
+  status = 301
+  force = true
+
+# Pretty URLs
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Headers for security and caching
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+[[headers]]
+  for = "/*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/images/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000"

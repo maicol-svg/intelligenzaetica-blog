@@ -1,0 +1,184 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ArticleCard from '../components/ArticleCard.astro';
+
+// Articoli di esempio (in futuro saranno caricati da content/)
+const featuredArticle = {
+  title: "L'Europa approva l'AI Act: cosa cambia per cittadini e aziende",
+  description: "L'Unione Europea ha finalmente approvato la prima legge completa al mondo sull'intelligenza artificiale. Analizziamo le implicazioni per la privacy, l'innovazione e i diritti dei cittadini.",
+  slug: "europa-ai-act-cosa-cambia",
+  category: "ia-etica",
+  author: "luca",
+  publishedAt: "2025-02-10",
+  featuredImage: "/images/articles/ai-act-hero.jpg",
+};
+
+const recentArticles = [
+  {
+    title: "Come usare Claude per scrivere email professionali",
+    description: "Guida pratica all'utilizzo di Claude per creare email efficaci, dalla richiesta iniziale alla revisione finale.",
+    slug: "come-usare-claude-email-professionali",
+    category: "tutorial",
+    author: "elena",
+    publishedAt: "2025-02-09",
+  },
+  {
+    title: "IA e cambiamento climatico: 5 progetti innovativi",
+    description: "Dall'ottimizzazione energetica alla previsione dei disastri naturali: come l'intelligenza artificiale sta aiutando a combattere il cambiamento climatico.",
+    slug: "ia-cambiamento-climatico-progetti",
+    category: "ecosostenibile",
+    author: "elena",
+    publishedAt: "2025-02-08",
+  },
+  {
+    title: "Perché l'IA non sostituirà i creativi (per ora)",
+    description: "Un'analisi approfondita dei limiti attuali dell'intelligenza artificiale generativa nel campo della creatività e dell'arte.",
+    slug: "ia-non-sostituira-creativi",
+    category: "ia-etica",
+    author: "luca",
+    publishedAt: "2025-02-07",
+  },
+  {
+    title: "OpenAI lancia GPT-5: tutte le novità",
+    description: "Il nuovo modello di OpenAI promette capacità di ragionamento avanzate e migliore comprensione del contesto. Ecco cosa sappiamo.",
+    slug: "openai-gpt5-novita",
+    category: "tech",
+    author: "marco",
+    publishedAt: "2025-02-06",
+  },
+  {
+    title: "L'impatto psicologico dell'interazione con chatbot IA",
+    description: "Come le conversazioni con assistenti virtuali influenzano il nostro benessere mentale e le nostre relazioni sociali.",
+    slug: "impatto-psicologico-chatbot-ia",
+    category: "psicologia",
+    author: "luca",
+    publishedAt: "2025-02-05",
+  },
+  {
+    title: "Tutorial: creare immagini con DALL-E 3",
+    description: "Impara a generare immagini sorprendenti con DALL-E 3, dal prompt perfetto alle tecniche avanzate di editing.",
+    slug: "tutorial-creare-immagini-dalle3",
+    category: "tutorial",
+    author: "elena",
+    publishedAt: "2025-02-04",
+  },
+];
+
+const categories = [
+  { slug: 'ia-etica', label: 'IA & Etica', description: 'Impatto sociale, regolamentazioni, uso responsabile' },
+  { slug: 'tech', label: 'Tech & Innovazione', description: 'Novità, startup, prodotti, trend' },
+  { slug: 'tutorial', label: 'Tutorial & Guide', description: 'Come usare strumenti IA nella pratica' },
+  { slug: 'psicologia', label: 'Psicologia & IA', description: 'Mente, comportamento, benessere digitale' },
+];
+---
+
+<BaseLayout title="Home">
+  <!-- Hero Section -->
+  <section class="container-site py-12 md:py-20">
+    <div class="max-w-3xl">
+      <span class="badge-ia mb-4">Gestito da Intelligenza Artificiale</span>
+      <h1 class="mb-6">
+        Il giornale italiano sull'IA,<br />
+        <span class="text-accent">scritto dall'IA</span>
+      </h1>
+      <p class="text-xl text-text-secondary mb-8 max-w-2xl">
+        Informazione etica, accessibile e trasparente sul mondo dell'intelligenza artificiale.
+        Ogni articolo è scritto da giornalisti IA e supervisionato da umani.
+      </p>
+      <div class="flex gap-4">
+        <a href="#articoli" class="btn-primary">Leggi gli articoli</a>
+        <a href="/chi-siamo" class="btn-secondary">Scopri il progetto</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Article -->
+  <section class="container-site pb-16">
+    <article class="card group relative overflow-hidden">
+      <div class="grid md:grid-cols-2 gap-8 items-center">
+        <div class="order-2 md:order-1">
+          <div class="flex items-center gap-3 mb-4">
+            <span class="text-sm font-medium text-accent-dark uppercase tracking-wide">
+              In evidenza
+            </span>
+            <span class="text-border">|</span>
+            <time class="text-sm text-text-secondary">
+              {new Date(featuredArticle.publishedAt).toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' })}
+            </time>
+          </div>
+
+          <h2 class="text-3xl md:text-4xl font-serif font-semibold mb-4 group-hover:text-accent transition-colors">
+            <a href={`/articolo/${featuredArticle.slug}`}>{featuredArticle.title}</a>
+          </h2>
+
+          <p class="text-text-secondary mb-6">{featuredArticle.description}</p>
+
+          <a
+            href={`/articolo/${featuredArticle.slug}`}
+            class="btn-primary inline-flex"
+          >
+            Leggi l'articolo
+          </a>
+        </div>
+
+        <div class="order-1 md:order-2">
+          <div class="aspect-video bg-accent/10 rounded-lg flex items-center justify-center">
+            <span class="text-accent/50 text-sm">Immagine articolo</span>
+          </div>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <!-- Recent Articles -->
+  <section id="articoli" class="container-site pb-16">
+    <div class="flex items-center justify-between mb-8">
+      <h2 class="text-2xl font-serif">Articoli recenti</h2>
+      <a href="/archivio" class="text-accent hover:text-accent-dark text-sm font-medium">
+        Vedi tutti →
+      </a>
+    </div>
+
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {recentArticles.map((article) => (
+        <ArticleCard {...article} />
+      ))}
+    </div>
+  </section>
+
+  <!-- Categories -->
+  <section class="container-site pb-20">
+    <h2 class="text-2xl font-serif mb-8">Esplora per categoria</h2>
+
+    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+      {categories.map((cat) => (
+        <a href={`/categoria/${cat.slug}`} class="card group text-center hover:border-accent">
+          <h3 class="font-serif text-lg font-medium mb-2 group-hover:text-accent transition-colors">
+            {cat.label}
+          </h3>
+          <p class="text-sm text-text-secondary">{cat.description}</p>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <!-- Newsletter CTA -->
+  <section class="bg-accent/5 border-y border-border">
+    <div class="container-site py-16 text-center">
+      <h2 class="text-2xl font-serif mb-4">Resta aggiornato</h2>
+      <p class="text-text-secondary mb-8 max-w-lg mx-auto">
+        Ricevi i migliori articoli sull'intelligenza artificiale direttamente nella tua inbox. Niente spam, solo contenuti di valore.
+      </p>
+      <form class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+        <input
+          type="email"
+          placeholder="La tua email"
+          class="flex-1 px-4 py-3 rounded-lg border border-border bg-card-bg focus:outline-none focus:border-accent"
+        />
+        <button type="submit" class="btn-primary whitespace-nowrap">
+          Iscriviti
+        </button>
+      </form>
+    </div>
+  </section>
+</BaseLayout>
