@@ -45,12 +45,40 @@ class ArticlePublisher:
         Returns:
             Tupla (frontmatter_dict, content)
         """
-        # Pattern per frontmatter YAML
+        # Pattern per frontmatter YAML (gestisce anche ```yaml blocks)
         pattern = r"^---\s*\n(.*?)\n---\s*\n(.*)$"
-        match = re.match(pattern, article, re.DOTALL)
+        match = re.match(pattern, article.strip(), re.DOTALL)
 
         if not match:
-            raise ValueError("Frontmatter YAML non trovato nell'articolo")
+            # Prova pattern alternativo con ```yaml
+            alt_pattern = r"^```yaml\s*\n(.*?)\n```\s*\n(.*)$"
+            match = re.match(alt_pattern, article.strip(), re.DOTALL)
+
+        if not match:
+            # Fallback: estrai titolo dal contenuto e crea frontmatter
+            print("⚠️  Frontmatter non trovato, generazione automatica...")
+            content = article.strip()
+
+            # Cerca un titolo (prima riga con # o prima riga)
+            lines = content.split("\n")
+            title = "Articolo senza titolo"
+            for line in lines:
+                if line.startswith("# "):
+                    title = line[2:].strip()
+                    break
+                elif line.strip() and not line.startswith("#"):
+                    title = line.strip()[:100]
+                    break
+
+            frontmatter = {
+                "title": title,
+                "description": title[:160],
+                "author": "marco",
+                "publishedAt": datetime.now().strftime("%Y-%m-%d"),
+                "aiGenerated": True,
+                "humanReview": False,
+            }
+            return frontmatter, content
 
         frontmatter_str = match.group(1)
         content = match.group(2).strip()
