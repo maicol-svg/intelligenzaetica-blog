@@ -2,38 +2,92 @@
   "version": "1.0",
   "description": "Calendario editoriale IntelligenzaEtica.blog - 2 articoli/giorno",
   "updated_at": "2025-02-11",
-
   "schedule": {
     "lunedi": [
-      {"slot": "mattina", "categoria": "ia-etica", "agente": "luca"},
-      {"slot": "sera", "categoria": "tech", "agente": "marco"}
+      {
+        "slot": "mattina",
+        "categoria": "ia-etica",
+        "agente": "luca"
+      },
+      {
+        "slot": "sera",
+        "categoria": "tech",
+        "agente": "marco"
+      }
     ],
     "martedi": [
-      {"slot": "mattina", "categoria": "tutorial", "agente": "elena"},
-      {"slot": "sera", "categoria": "finanza", "agente": "marco"}
+      {
+        "slot": "mattina",
+        "categoria": "tutorial",
+        "agente": "elena"
+      },
+      {
+        "slot": "sera",
+        "categoria": "finanza",
+        "agente": "marco"
+      }
     ],
     "mercoledi": [
-      {"slot": "mattina", "categoria": "psicologia", "agente": "luca"},
-      {"slot": "sera", "categoria": "ecosostenibile", "agente": "marco"}
+      {
+        "slot": "mattina",
+        "categoria": "psicologia",
+        "agente": "luca"
+      },
+      {
+        "slot": "sera",
+        "categoria": "ecosostenibile",
+        "agente": "marco"
+      }
     ],
     "giovedi": [
-      {"slot": "mattina", "categoria": "ia-etica", "agente": "luca"},
-      {"slot": "sera", "categoria": "tutorial", "agente": "elena"}
+      {
+        "slot": "mattina",
+        "categoria": "ia-etica",
+        "agente": "luca"
+      },
+      {
+        "slot": "sera",
+        "categoria": "tutorial",
+        "agente": "elena"
+      }
     ],
     "venerdi": [
-      {"slot": "mattina", "categoria": "tech", "agente": "marco"},
-      {"slot": "sera", "categoria": "finanza", "agente": "marco"}
+      {
+        "slot": "mattina",
+        "categoria": "tech",
+        "agente": "marco"
+      },
+      {
+        "slot": "sera",
+        "categoria": "finanza",
+        "agente": "marco"
+      }
     ],
     "sabato": [
-      {"slot": "mattina", "categoria": "tutorial", "agente": "elena"},
-      {"slot": "sera", "categoria": "psicologia", "agente": "luca"}
+      {
+        "slot": "mattina",
+        "categoria": "tutorial",
+        "agente": "elena"
+      },
+      {
+        "slot": "sera",
+        "categoria": "psicologia",
+        "agente": "luca"
+      }
     ],
     "domenica": [
-      {"slot": "mattina", "categoria": "ia-etica", "agente": "luca"},
-      {"slot": "sera", "categoria": "ecosostenibile", "agente": "marco"}
+      {
+        "slot": "mattina",
+        "categoria": "ia-etica",
+        "agente": "luca"
+      },
+      {
+        "slot": "sera",
+        "categoria": "ecosostenibile",
+        "agente": "marco"
+      }
     ]
   },
-
   "topics_pool": {
     "ia-etica": [
       "Il dibattito sulla coscienza artificiale: cosa significa davvero 'pensare' per una macchina",
@@ -108,7 +162,6 @@
       "Edilizia sostenibile: l'IA nella progettazione di edifici verdi"
     ]
   },
-
   "distribution_stats": {
     "ia-etica": 3,
     "tech": 2,
@@ -117,6 +170,5 @@
     "psicologia": 2,
     "ecosostenibile": 2
   },
-
   "notes": "Piano settimanale: 14 articoli totali. Distribuzione equilibrata con focus su IA etica e tutorial."
 }
