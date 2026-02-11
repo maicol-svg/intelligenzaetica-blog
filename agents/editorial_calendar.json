@@ -1,0 +1,122 @@
+{
+  "version": "1.0",
+  "description": "Calendario editoriale IntelligenzaEtica.blog - 2 articoli/giorno",
+  "updated_at": "2025-02-11",
+
+  "schedule": {
+    "lunedi": [
+      {"slot": "mattina", "categoria": "ia-etica", "agente": "luca"},
+      {"slot": "sera", "categoria": "tech", "agente": "marco"}
+    ],
+    "martedi": [
+      {"slot": "mattina", "categoria": "tutorial", "agente": "elena"},
+      {"slot": "sera", "categoria": "finanza", "agente": "marco"}
+    ],
+    "mercoledi": [
+      {"slot": "mattina", "categoria": "psicologia", "agente": "luca"},
+      {"slot": "sera", "categoria": "ecosostenibile", "agente": "marco"}
+    ],
+    "giovedi": [
+      {"slot": "mattina", "categoria": "ia-etica", "agente": "luca"},
+      {"slot": "sera", "categoria": "tutorial", "agente": "elena"}
+    ],
+    "venerdi": [
+      {"slot": "mattina", "categoria": "tech", "agente": "marco"},
+      {"slot": "sera", "categoria": "finanza", "agente": "marco"}
+    ],
+    "sabato": [
+      {"slot": "mattina", "categoria": "tutorial", "agente": "elena"},
+      {"slot": "sera", "categoria": "psicologia", "agente": "luca"}
+    ],
+    "domenica": [
+      {"slot": "mattina", "categoria": "ia-etica", "agente": "luca"},
+      {"slot": "sera", "categoria": "ecosostenibile", "agente": "marco"}
+    ]
+  },
+
+  "topics_pool": {
+    "ia-etica": [
+      "Il dibattito sulla coscienza artificiale: cosa significa davvero 'pensare' per una macchina",
+      "Bias algoritmici: come l'IA può perpetuare discriminazioni sociali",
+      "Il diritto all'oblio nell'era dell'IA: proteggere la privacy digitale",
+      "Deepfake e disinformazione: le sfide etiche della manipolazione mediatica",
+      "L'IA nel sistema giudiziario: equità e trasparenza nelle decisioni automatizzate",
+      "Lavoro e automazione: ripensare il valore umano nell'era delle macchine",
+      "Responsabilità algoritmica: chi paga quando l'IA sbaglia?",
+      "L'IA generativa e il copyright: diritti d'autore nell'era dei modelli linguistici",
+      "Sorveglianza e riconoscimento facciale: il prezzo della sicurezza",
+      "Etica dell'IA in medicina: quando le macchine prendono decisioni sulla salute"
+    ],
+    "tech": [
+      "GPT-5 rumors: cosa aspettarsi dalla prossima generazione di OpenAI",
+      "Claude 3.5 vs GPT-4: confronto pratico tra i due giganti dell'IA",
+      "Gemini 2.0 di Google: le novità e le sfide per il mercato",
+      "Local LLM: come eseguire modelli linguistici sul proprio computer",
+      "RAG (Retrieval Augmented Generation): come funziona e perché è importante",
+      "AI Agents: il futuro dell'automazione intelligente",
+      "Mistral AI e la sfida europea all'IA americana",
+      "Apple Intelligence: la strategia di Cupertino per l'IA on-device",
+      "Il boom delle startup IA italiane nel 2025",
+      "Quantum computing e IA: la prossima rivoluzione tecnologica"
+    ],
+    "tutorial": [
+      "Guida completa a Claude API: dalla registrazione al primo progetto",
+      "Come creare un chatbot personalizzato con Python e Anthropic",
+      "Prompt engineering: 10 tecniche avanzate per ottenere risultati migliori",
+      "Automatizzare il proprio workflow con AI agents",
+      "Come integrare ChatGPT in un sito web: guida step-by-step",
+      "Creare immagini con Midjourney: dalla base alle tecniche avanzate",
+      "Fine-tuning di modelli open source con Hugging Face",
+      "Sviluppare plugin per ChatGPT: guida pratica",
+      "LangChain per principianti: costruire applicazioni IA in Python",
+      "Come usare Stable Diffusion in locale: installazione e configurazione"
+    ],
+    "finanza": [
+      "IA e trading algoritmico: opportunità e rischi per i piccoli investitori",
+      "Come le banche usano l'IA per valutare il credito",
+      "Robo-advisor: conviene affidarsi all'IA per i propri investimenti?",
+      "Criptovalute e IA: analisi predittiva dei mercati crypto",
+      "Fintech italiane: le startup che stanno rivoluzionando la finanza",
+      "L'IA nella gestione del risparmio: strumenti accessibili a tutti",
+      "Frodi finanziarie: come l'IA protegge il tuo conto",
+      "Insurtech: come l'intelligenza artificiale sta cambiando le assicurazioni",
+      "Investire in aziende IA: analisi del settore per il 2025",
+      "Personal finance e IA: app che gestiscono il tuo budget"
+    ],
+    "psicologia": [
+      "Ansia da IA: come gestire la paura di essere sostituiti",
+      "Digital detox nell'era dell'IA: ritrovare l'equilibrio",
+      "L'impatto psicologico delle relazioni con chatbot",
+      "FOMO tecnologico: la pressione di restare sempre aggiornati",
+      "Creatività umana vs IA: cosa ci rende davvero unici",
+      "Mindfulness digitale: vivere consapevolmente con la tecnologia",
+      "Il paradosso della produttività: quando l'IA ci rende più stressati",
+      "Bambini e IA: come educare le nuove generazioni",
+      "La solitudine dell'era digitale: connessi ma isolati",
+      "Identità digitale: chi siamo quando parliamo con un'IA"
+    ],
+    "ecosostenibile": [
+      "L'impronta carbonica dell'IA: quanto inquinano i data center",
+      "IA per il clima: come gli algoritmi aiutano a combattere il cambiamento climatico",
+      "Agricoltura di precisione: l'IA al servizio della sostenibilità alimentare",
+      "Smart grid e IA: ottimizzare il consumo energetico",
+      "L'IA nella gestione dei rifiuti: verso l'economia circolare",
+      "Biodiversità e algoritmi: monitorare gli ecosistemi con l'IA",
+      "Green AI: rendere l'intelligenza artificiale più sostenibile",
+      "Mobilità sostenibile: come l'IA sta trasformando i trasporti",
+      "Ocean AI: proteggere i mari con la tecnologia",
+      "Edilizia sostenibile: l'IA nella progettazione di edifici verdi"
+    ]
+  },
+
+  "distribution_stats": {
+    "ia-etica": 3,
+    "tech": 2,
+    "tutorial": 3,
+    "finanza": 2,
+    "psicologia": 2,
+    "ecosostenibile": 2
+  },
+
+  "notes": "Piano settimanale: 14 articoli totali. Distribuzione equilibrata con focus su IA etica e tutorial."
+}

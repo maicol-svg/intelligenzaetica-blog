@@ -1,0 +1,147 @@
+name: Daily Article Publishing
+
+on:
+  # Esecuzione programmata: 08:00 e 18:00 CET (07:00 e 17:00 UTC)
+  schedule:
+    - cron: '0 7 * * *'   # Mattina: 08:00 CET
+    - cron: '0 17 * * *'  # Sera: 18:00 CET
+
+  # Trigger manuale per test
+  workflow_dispatch:
+    inputs:
+      force_category:
+        description: 'Forza una categoria specifica (opzionale)'
+        required: false
+        type: choice
+        options:
+          - ''
+          - ia-etica
+          - tech
+          - tutorial
+          - finanza
+          - psicologia
+          - ecosostenibile
+
+env:
+  PYTHON_VERSION: '3.11'
+
+jobs:
+  generate-article:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r agents/requirements.txt
+
+      - name: Generate article
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          FORCE_CATEGORY: ${{ github.event.inputs.force_category }}
+        run: |
+          cd agents
+          if [ -n "$FORCE_CATEGORY" ]; then
+            echo "Forzando categoria: $FORCE_CATEGORY"
+            python orchestrator.py generate --category "$FORCE_CATEGORY"
+          else
+            echo "Usando scheduler automatico"
+            python orchestrator.py generate
+          fi
+
+      - name: Run editor review
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          cd agents
+          python orchestrator.py review
+
+      - name: Publish approved articles
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          cd agents
+          python orchestrator.py publish --no-commit
+
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action - IntelligenzaEtica Bot"
+
+          # Add new articles
+          git add content/articles/
+
+          # Add updated calendar (topic usage)
+          git add agents/editorial_calendar.json
+
+          # Check if there are changes
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "📝 Nuovo articolo pubblicato automaticamente
+
+          🤖 Generato con [Claude AI](https://anthropic.com)
+          ⏰ $(date +'%Y-%m-%d %H:%M') CET"
+
+            git push
+          fi
+
+      - name: Trigger Netlify Deploy
+        if: success()
+        run: |
+          echo "Push completato - Netlify rileverà le modifiche automaticamente"
+
+  refill-topics:
+    runs-on: ubuntu-latest
+    # Esegui solo una volta al giorno (mattina)
+    if: github.event.schedule == '0 7 * * *' || github.event_name == 'workflow_dispatch'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r agents/requirements.txt
+
+      - name: Refill topics pool
+        run: |
+          cd agents
+          python topics_generator.py
+
+      - name: Commit topic updates
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action - IntelligenzaEtica Bot"
+
+          git add agents/editorial_calendar.json
+
+          if git diff --staged --quiet; then
+            echo "No topic updates"
+          else
+            git commit -m "🔄 Aggiornamento pool topic
+
+          Automatico via topics_generator.py"
+
+            git push
+          fi

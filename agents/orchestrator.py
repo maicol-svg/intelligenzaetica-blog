@@ -24,6 +24,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 from utils.claude_client import ClaudeClient
 from utils.publisher import ArticlePublisher
+from scheduler import PublishingScheduler
 
 
 def load_config() -> dict:
@@ -269,30 +270,32 @@ def main():
 
     # Comando: generate
     gen_parser = subparsers.add_parser("generate", help="Genera un nuovo articolo")
-    gen_parser.add_argument("--topic", "-t", required=True, help="Argomento dell'articolo")
+    gen_parser.add_argument("--topic", "-t", help="Argomento dell'articolo (se omesso, prende dallo scheduler)")
     gen_parser.add_argument(
         "--category",
         "-c",
-        required=True,
         choices=["ia-etica", "tech", "tutorial", "finanza", "psicologia", "ecosostenibile"],
-        help="Categoria dell'articolo",
+        help="Categoria dell'articolo (se omesso, prende dallo scheduler)",
     )
     gen_parser.add_argument("--agent", "-a", help="Agente da usare (opzionale)")
     gen_parser.add_argument("--context", help="Contesto aggiuntivo")
     gen_parser.add_argument(
         "--publish", action="store_true", help="Pubblica direttamente"
     )
+    gen_parser.add_argument(
+        "--from-scheduler", action="store_true", help="Usa lo scheduler per determinare cosa generare"
+    )
 
     # Comando: review
     rev_parser = subparsers.add_parser("review", help="Revisiona un articolo")
-    rev_parser.add_argument("--file", "-f", required=True, help="Path dell'articolo")
+    rev_parser.add_argument("--file", "-f", help="Path dell'articolo (se omesso, revisiona tutti i drafts)")
     rev_parser.add_argument(
         "--no-fix", action="store_true", help="Non applicare correzioni automatiche"
     )
 
     # Comando: publish
     pub_parser = subparsers.add_parser("publish", help="Pubblica un articolo")
-    pub_parser.add_argument("--file", "-f", required=True, help="Path della bozza")
+    pub_parser.add_argument("--file", "-f", help="Path della bozza (se omesso, pubblica tutti gli approvati)")
     pub_parser.add_argument(
         "--no-commit", action="store_true", help="Non committare su GitHub"
     )
@@ -318,19 +321,79 @@ def main():
         return
 
     if args.command == "generate":
+        topic = args.topic
+        category = args.category
+        agent = args.agent
+
+        # Se mancano topic o category, usa lo scheduler
+        if not topic or not category:
+            scheduler = PublishingScheduler()
+            next_article = scheduler.get_next_article_to_generate()
+
+            if next_article:
+                if not category:
+                    category = next_article.get("categoria")
+                if not topic:
+                    topic = next_article.get("topic")
+                if not agent:
+                    agent = next_article.get("agente")
+                print(f"📅 Usando scheduler: {category} -> {agent}")
+            else:
+                print("❌ Nessun articolo programmato e nessun topic fornito")
+                return
+
+        if not topic:
+            print("❌ Topic richiesto (--topic) o non disponibile nello scheduler")
+            return
+
         generate_article(
-            topic=args.topic,
-            category=args.category,
-            agent=args.agent,
+            topic=topic,
+            category=category,
+            agent=agent,
             context=args.context,
             as_draft=not args.publish,
         )
 
     elif args.command == "review":
-        review_article(Path(args.file), auto_fix=not args.no_fix)
+        if args.file:
+            review_article(Path(args.file), auto_fix=not args.no_fix)
+        else:
+            # Revisiona tutti i drafts
+            publisher = ArticlePublisher()
+            drafts = publisher.list_drafts()
+            if not drafts:
+                print("📭 Nessuna bozza da revisionare")
+            else:
+                print(f"🔍 Revisione di {len(drafts)} bozze...")
+                for draft in drafts:
+                    try:
+                        review_article(draft, auto_fix=not args.no_fix)
+                    except Exception as e:
+                        print(f"❌ Errore revisione {draft}: {e}")
 
     elif args.command == "publish":
-        publish_article(Path(args.file), commit=not args.no_commit)
+        if args.file:
+            publish_article(Path(args.file), commit=not args.no_commit)
+        else:
+            # Pubblica tutti i drafts approvati (dopo review)
+            publisher = ArticlePublisher()
+            drafts = publisher.list_drafts()
+            if not drafts:
+                print("📭 Nessuna bozza da pubblicare")
+            else:
+                print(f"📤 Pubblicazione di {len(drafts)} bozze...")
+                for draft in drafts:
+                    try:
+                        publish_article(draft, commit=False)
+                    except Exception as e:
+                        print(f"❌ Errore pubblicazione {draft}: {e}")
+                # Commit unico alla fine
+                if not args.no_commit:
+                    success = publisher.git_commit_and_push("content: Pubblicazione batch articoli")
+                    if success:
+                        print("✅ Modifiche pushate su GitHub")
+                    else:
+                        print("⚠️  Errore nel push su GitHub")
 
     elif args.command == "list-drafts":
         list_drafts()
