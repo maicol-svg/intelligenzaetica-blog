@@ -28,7 +28,8 @@ class ArticlePublisher:
             # Risali dalla cartella utils/
             self.base_path = Path(__file__).parent.parent.parent
 
-        self.content_path = self.base_path / "content" / "articles"
+        # Articoli pubblicati vanno in src/content/articles/ per Astro Content Collections
+        self.content_path = self.base_path / "src" / "content" / "articles"
         self.drafts_path = self.base_path / "content" / "drafts"
 
         # Crea le directory se non esistono

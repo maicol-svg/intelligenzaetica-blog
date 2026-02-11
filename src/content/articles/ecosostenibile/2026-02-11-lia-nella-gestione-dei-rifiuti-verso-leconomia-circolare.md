@@ -15,8 +15,6 @@ tags:
 - riciclo
 ---
 
-# L'IA nella gestione dei rifiuti: verso l'economia circolare
-
 La gestione dei rifiuti rappresenta una delle sfide più importanti per la costruzione di un futuro sostenibile. In Italia, come in molti altri Paesi, il passaggio da un modello lineare a uno circolare è ancora un obiettivo da raggiungere. Tuttavia, l'intelligenza artificiale sta offrendo nuove soluzioni per rendere più efficiente e innovativo questo settore cruciale.
 
 Secondo i dati dell'Istituto Superiore per la Protezione e la Ricerca Ambientale (ISPRA), l'Italia produce circa 30 milioni di tonnellate di rifiuti urbani all'anno, con un tasso di riciclo del 55%. L'integrazione dell'IA in questo settore potrebbe aumentare significativamente questi numeri, ottimizzando ogni fase del processo.

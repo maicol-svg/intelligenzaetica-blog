@@ -1,0 +1,83 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+
+const categoryLabels: Record<string, { label: string; description: string }> = {
+  'ia-etica': {
+    label: 'IA & Etica',
+    description: 'Impatto sociale, regolamentazioni, bias algoritmici e uso responsabile dell\'intelligenza artificiale',
+  },
+  'tech': {
+    label: 'Tech & Innovazione',
+    description: 'Novità dal mondo tech, startup innovative, nuovi prodotti e trend del settore',
+  },
+  'tutorial': {
+    label: 'Tutorial & Guide',
+    description: 'Guide pratiche per utilizzare strumenti IA nella vita quotidiana e nel lavoro',
+  },
+  'finanza': {
+    label: 'Finanza & Lavoro',
+    description: 'Come l\'IA sta trasformando il settore finanziario e il mondo del lavoro',
+  },
+  'psicologia': {
+    label: 'Psicologia & IA',
+    description: 'L\'impatto dell\'intelligenza artificiale sulla mente umana e il benessere digitale',
+  },
+  'ecosostenibile': {
+    label: 'IA Ecosostenibile',
+    description: 'Come l\'intelligenza artificiale può aiutare a combattere il cambiamento climatico',
+  },
+};
+
+export async function getStaticPaths() {
+  const categories = ['ia-etica', 'tech', 'tutorial', 'finanza', 'psicologia', 'ecosostenibile'];
+
+  return categories.map((categoria) => ({
+    params: { categoria },
+  }));
+}
+
+const { categoria } = Astro.params;
+const categoryInfo = categoryLabels[categoria] || { label: categoria, description: '' };
+
+const allArticles = await getCollection('articles');
+const categoryArticles = allArticles
+  .filter((article) => article.data.category === categoria)
+  .sort((a, b) => {
+    const dateA = new Date(a.data.publishedAt);
+    const dateB = new Date(b.data.publishedAt);
+    return dateB.getTime() - dateA.getTime();
+  });
+---
+
+<BaseLayout title={categoryInfo.label} description={categoryInfo.description}>
+  <section class="container-site py-12 md:py-16">
+    <div class="max-w-3xl mb-12">
+      <a href="/" class="text-accent hover:text-accent-dark text-sm mb-4 inline-block">&larr; Torna alla home</a>
+      <h1 class="text-4xl md:text-5xl font-serif mb-4">{categoryInfo.label}</h1>
+      <p class="text-xl text-text-secondary">{categoryInfo.description}</p>
+    </div>
+
+    {categoryArticles.length > 0 ? (
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {categoryArticles.map((article) => (
+          <ArticleCard
+            title={article.data.title}
+            description={article.data.description}
+            slug={article.slug}
+            category={article.data.category}
+            author={article.data.author}
+            publishedAt={typeof article.data.publishedAt === 'string' ? article.data.publishedAt : article.data.publishedAt.toISOString().split('T')[0]}
+            featuredImage={article.data.featuredImage}
+          />
+        ))}
+      </div>
+    ) : (
+      <div class="text-center py-16">
+        <p class="text-text-secondary text-lg">Nessun articolo in questa categoria per ora.</p>
+        <p class="text-text-secondary mt-2">Torna presto per nuovi contenuti!</p>
+      </div>
+    )}
+  </section>
+</BaseLayout>

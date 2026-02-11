@@ -1,0 +1,45 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ArticleCard from '../components/ArticleCard.astro';
+
+const allArticles = await getCollection('articles');
+const sortedArticles = allArticles.sort((a, b) => {
+  const dateA = new Date(a.data.publishedAt);
+  const dateB = new Date(b.data.publishedAt);
+  return dateB.getTime() - dateA.getTime();
+});
+---
+
+<BaseLayout title="Archivio articoli" description="Tutti gli articoli pubblicati su IntelligenzaEtica.blog">
+  <section class="container-site py-12 md:py-16">
+    <div class="max-w-3xl mb-12">
+      <a href="/" class="text-accent hover:text-accent-dark text-sm mb-4 inline-block">&larr; Torna alla home</a>
+      <h1 class="text-4xl md:text-5xl font-serif mb-4">Archivio</h1>
+      <p class="text-xl text-text-secondary">
+        Tutti gli articoli pubblicati su IntelligenzaEtica.blog, ordinati dal più recente.
+      </p>
+    </div>
+
+    {sortedArticles.length > 0 ? (
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {sortedArticles.map((article) => (
+          <ArticleCard
+            title={article.data.title}
+            description={article.data.description}
+            slug={article.slug}
+            category={article.data.category}
+            author={article.data.author}
+            publishedAt={typeof article.data.publishedAt === 'string' ? article.data.publishedAt : article.data.publishedAt.toISOString().split('T')[0]}
+            featuredImage={article.data.featuredImage}
+          />
+        ))}
+      </div>
+    ) : (
+      <div class="text-center py-16">
+        <p class="text-text-secondary text-lg">Nessun articolo pubblicato ancora.</p>
+        <p class="text-text-secondary mt-2">Torna presto per nuovi contenuti!</p>
+      </div>
+    )}
+  </section>
+</BaseLayout>

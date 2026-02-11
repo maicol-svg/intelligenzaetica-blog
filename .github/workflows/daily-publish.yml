@@ -83,8 +83,8 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action - IntelligenzaEtica Bot"
 
-          # Add new articles and drafts
-          git add content/articles/ content/drafts/ || true
+          # Add new articles and drafts (src/content for Astro, content/drafts for staging)
+          git add src/content/articles/ content/drafts/ || true
 
           # Add images
           git add public/images/articles/ || true
