@@ -97,6 +97,8 @@ jobs:
           🤖 Generato con [Claude AI](https://anthropic.com)
           ⏰ $(date +'%Y-%m-%d %H:%M') CET"
 
+            # Pull con rebase per evitare conflitti
+            git pull --rebase origin master || true
             git push
           fi
 
@@ -107,10 +109,11 @@ jobs:
 
   refill-topics:
     runs-on: ubuntu-latest
+    needs: generate-article  # Aspetta che generate-article finisca
     permissions:
       contents: write
     # Esegui solo una volta al giorno (mattina)
-    if: github.event.schedule == '0 7 * * *' || github.event_name == 'workflow_dispatch'
+    if: always() && (github.event.schedule == '0 7 * * *' || github.event_name == 'workflow_dispatch')
 
     steps:
       - name: Checkout repository
@@ -138,6 +141,9 @@ jobs:
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action - IntelligenzaEtica Bot"
+
+          # Pull ultimi cambiamenti
+          git pull --rebase origin master || true
 
           git add agents/editorial_calendar.json
 
