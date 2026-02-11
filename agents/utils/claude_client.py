@@ -27,11 +27,11 @@ class ClaudeClient:
 
         self.client = Anthropic(api_key=self.api_key)
 
-        # Modelli disponibili
+        # Modelli disponibili (nomi API corretti)
         self.models = {
-            "haiku": "claude-3-5-haiku-20241022",
-            "sonnet": "claude-3-5-sonnet-20241022",
-            "opus": "claude-3-opus-20240229",
+            "haiku": "claude-3-haiku-20240307",
+            "sonnet": "claude-sonnet-4-20250514",
+            "opus": "claude-opus-4-20250514",
         }
 
     def load_prompt(self, prompt_file: str) -> str:
