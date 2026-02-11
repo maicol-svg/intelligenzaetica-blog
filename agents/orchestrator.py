@@ -24,6 +24,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 from utils.claude_client import ClaudeClient
 from utils.publisher import ArticlePublisher
+from utils.image_fetcher import ImageFetcher
 from scheduler import PublishingScheduler
 
 
@@ -48,6 +49,7 @@ def generate_article(
     agent: str | None = None,
     context: str | None = None,
     as_draft: bool = True,
+    fetch_image: bool = True,
 ) -> Path:
     """
     Genera un nuovo articolo.
@@ -58,6 +60,7 @@ def generate_article(
         agent: Nome dell'agente (opzionale, altrimenti usa default per categoria)
         context: Contesto aggiuntivo (es. fonte della notizia)
         as_draft: Se True, salva come bozza
+        fetch_image: Se True, recupera un'immagine da Unsplash
 
     Returns:
         Path del file creato
@@ -65,6 +68,7 @@ def generate_article(
     config = load_config()
     client = ClaudeClient()
     publisher = ArticlePublisher()
+    image_fetcher = ImageFetcher()
 
     # Determina l'agente
     if not agent:
@@ -90,8 +94,43 @@ def generate_article(
         temperature=config["api"]["temperature"]["writer"],
     )
 
-    # Salva l'articolo
+    # Salva l'articolo (prima senza immagine)
     file_path = publisher.save_article(article, category=category, as_draft=as_draft)
+
+    # Recupera immagine da Unsplash
+    if fetch_image:
+        print("🖼️  Ricerca immagine...")
+
+        # Estrai titolo dal file salvato per generare slug coerente
+        frontmatter, _ = publisher.parse_frontmatter(file_path.read_text(encoding="utf-8"))
+        title = frontmatter.get("title", topic)
+        slug = publisher.generate_slug(title)
+
+        image_info = image_fetcher.get_image_for_article(
+            title=title,
+            category=category,
+            slug=slug,
+        )
+
+        if image_info:
+            # Aggiorna il file con l'immagine nel frontmatter
+            article_content = file_path.read_text(encoding="utf-8")
+            frontmatter, content = publisher.parse_frontmatter(article_content)
+
+            frontmatter["featuredImage"] = image_info["path"]
+            frontmatter["imageCredit"] = f"Photo by {image_info['author']}"
+            frontmatter["imageCreditUrl"] = image_info["author_url"]
+
+            # Riscrivi il file con frontmatter aggiornato
+            frontmatter_str = yaml.dump(
+                frontmatter, allow_unicode=True, default_flow_style=False, sort_keys=False
+            )
+            updated_article = f"---\n{frontmatter_str}---\n\n{content}"
+            file_path.write_text(updated_article, encoding="utf-8")
+
+            print(f"✅ Immagine aggiunta: {image_info['path']}")
+        else:
+            print("⚠️  Nessuna immagine trovata (articolo salvato senza immagine)")
 
     print(f"✅ Articolo salvato: {file_path}")
     return file_path

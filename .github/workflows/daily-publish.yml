@@ -52,6 +52,7 @@ jobs:
       - name: Generate article
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          UNSPLASH_ACCESS_KEY: ${{ secrets.UNSPLASH_ACCESS_KEY }}
           FORCE_CATEGORY: ${{ github.event.inputs.force_category }}
         run: |
           cd agents
@@ -84,6 +85,9 @@ jobs:
 
           # Add new articles and drafts
           git add content/articles/ content/drafts/ || true
+
+          # Add images
+          git add public/images/articles/ || true
 
           # Add updated calendar (topic usage)
           git add agents/editorial_calendar.json || true
