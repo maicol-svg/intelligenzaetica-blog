@@ -27,6 +27,15 @@ from pathlib import Path
 
 import yaml
 
+# Carica variabili d'ambiente da .env
+try:
+    from dotenv import load_dotenv
+    env_path = Path(__file__).parent.parent / ".env"
+    if env_path.exists():
+        load_dotenv(env_path)
+except ImportError:
+    pass  # dotenv non installato, usa env vars di sistema
+
 # Aggiungi il path per gli import locali
 sys.path.insert(0, str(Path(__file__).parent))
 

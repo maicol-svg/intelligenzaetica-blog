@@ -75,20 +75,28 @@ class ClaudeClient:
         Returns:
             Articolo generato in formato Markdown con frontmatter
         """
+        from datetime import datetime
+
         model_id = self.models.get(model, self.models["haiku"])
+
+        # Inietta la data corrente nel prompt (formato italiano)
+        current_date = datetime.now().strftime("%d %B %Y")  # Es: "12 febbraio 2026"
+        current_date_iso = datetime.now().strftime("%Y-%m-%d")  # Es: "2026-02-12"
+        prompt_with_date = agent_prompt.replace("{current_date}", current_date)
 
         # Costruisci il messaggio utente
         user_message = f"Scrivi un articolo su: {topic}"
         if context:
             user_message += f"\n\nContesto/Fonte:\n{context}"
 
-        user_message += "\n\nRicorda di includere il frontmatter YAML completo all'inizio."
+        user_message += f"\n\nRicorda di includere il frontmatter YAML completo all'inizio."
+        user_message += f"\nIMPORTANTE: La data di pubblicazione (publishedAt) deve essere: {current_date_iso}"
 
         response = self.client.messages.create(
             model=model_id,
             max_tokens=max_tokens,
             temperature=temperature,
-            system=agent_prompt,
+            system=prompt_with_date,
             messages=[{"role": "user", "content": user_message}],
         )
 
