@@ -51,28 +51,33 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <meta name="generator" content={Astro.generator} />
   </head>
   <body class="min-h-screen flex flex-col">
+    <!-- Skip link per accessibilità -->
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:bg-accent-dark focus:text-white focus:px-4 focus:py-2 focus:rounded-lg">
+      Salta al contenuto principale
+    </a>
+
     <slot name="header">
-      <header class="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
-        <nav class="container-site py-4 flex items-center justify-between">
-          <a href="/" class="flex items-center gap-2 text-text-primary hover:text-accent transition-colors">
+      <header class="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border" role="banner">
+        <nav class="container-site py-4 flex items-center justify-between" aria-label="Navigazione principale">
+          <a href="/" class="flex items-center gap-2 text-text-primary hover:text-accent-dark transition-colors focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 rounded" aria-label="Intelligenza Etica - Torna alla home">
             <span class="font-serif text-xl font-semibold">Intelligenza Etica</span>
           </a>
 
-          <div class="flex items-center gap-6 text-sm">
-            <a href="/categoria/ia-etica" class="hover:text-accent">IA & Etica</a>
-            <a href="/categoria/tech" class="hover:text-accent">Tech</a>
-            <a href="/categoria/tutorial" class="hover:text-accent">Tutorial</a>
-            <a href="/chi-siamo" class="hover:text-accent">Chi Siamo</a>
+          <div class="flex items-center gap-6 text-sm" role="menubar">
+            <a href="/categoria/ia-etica" class="text-text-primary hover:text-accent-dark hover:underline focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 rounded px-1" role="menuitem">IA & Etica</a>
+            <a href="/categoria/tech" class="text-text-primary hover:text-accent-dark hover:underline focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 rounded px-1" role="menuitem">Tech</a>
+            <a href="/categoria/tutorial" class="text-text-primary hover:text-accent-dark hover:underline focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 rounded px-1" role="menuitem">Tutorial</a>
+            <a href="/chi-siamo" class="text-text-primary hover:text-accent-dark hover:underline focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 rounded px-1" role="menuitem">Chi Siamo</a>
           </div>
         </nav>
       </header>
     </slot>
 
-    <main class="flex-1">
+    <main id="main-content" class="flex-1" role="main">
       <slot />
     </main>
 
-    <footer class="bg-text-primary text-background mt-auto">
+    <footer class="bg-text-primary text-background mt-auto" role="contentinfo">
       <div class="container-site py-12">
         <div class="grid md:grid-cols-3 gap-8">
           <!-- Brand -->

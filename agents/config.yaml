@@ -22,24 +22,28 @@ agents:
     specializations:
       - "tech"
       - "finanza"
+      - "sport"  # Nuovo: IA nello sport
     style: "informativo, dinamico, attuale"
     prompt_file: "prompts/marco.md"
 
   elena:
     name: "Elena"
-    role: "Giornalista IA - Tutorial & Guide"
+    role: "Giornalista IA - Tutorial & Lifestyle"
     specializations:
       - "tutorial"
       - "ecosostenibile"
+      - "quotidiano"  # Nuovo: vita quotidiana
+      - "salute"      # Nuovo: salute e benessere
     style: "pratico, step-by-step, accessibile"
     prompt_file: "prompts/elena.md"
 
   luca:
     name: "Luca"
-    role: "Giornalista IA - Etica & Opinioni"
+    role: "Giornalista IA - Etica & Creatività"
     specializations:
       - "ia-etica"
       - "psicologia"
+      - "creativita"  # Nuovo: arte, musica, scrittura
     style: "riflessivo, approfondito, conversazionale"
     prompt_file: "prompts/luca.md"
 
@@ -69,12 +73,12 @@ categories:
   ia-etica:
     label: "IA & Etica"
     default_agent: "luca"
-    frequency_per_week: 3
+    frequency_per_week: 2
 
   tech:
     label: "Tech & Innovazione"
     default_agent: "marco"
-    frequency_per_week: 4
+    frequency_per_week: 3
 
   tutorial:
     label: "Tutorial & Guide"
@@ -84,7 +88,7 @@ categories:
   finanza:
     label: "Finanza & Lavoro"
     default_agent: "marco"
-    frequency_per_week: 2
+    frequency_per_week: 1
 
   psicologia:
     label: "Psicologia & IA"
@@ -95,6 +99,32 @@ categories:
     label: "IA Ecosostenibile"
     default_agent: "elena"
     frequency_per_week: 1
+
+  # Nuove categorie
+  sport:
+    label: "IA & Sport"
+    default_agent: "marco"
+    frequency_per_week: 2
+    description: "Analytics sportive, performance, eSports, allenamento"
+
+  salute:
+    label: "IA & Salute"
+    default_agent: "elena"
+    frequency_per_week: 2
+    description: "Diagnostica, medicina, benessere personale"
+    sensitive: true  # Richiede review umana
+
+  creativita:
+    label: "IA & Creatività"
+    default_agent: "luca"
+    frequency_per_week: 2
+    description: "Arte, musica, scrittura, design generativo"
+
+  quotidiano:
+    label: "Vita Quotidiana"
+    default_agent: "elena"
+    frequency_per_week: 2
+    description: "Smart home, assistenti vocali, app intelligenti"
 
 # Contenuti sensibili (richiedono review umana)
 sensitive_topics:
@@ -138,3 +168,20 @@ notifications:
   email: "info@intelligenzaetica.blog"
   send_on_review: true
   send_on_error: true
+
+# Riunione Editoriale Settimanale
+weekly_meeting:
+  enabled: true
+  day: "monday"  # Giorno della settimana
+  output_file: "weekly_report.md"
+  tasks:
+    - review_performance      # Analizza performance articoli settimana precedente
+    - analyze_trends          # Identifica trend e argomenti caldi
+    - plan_content            # Pianifica contenuti settimana successiva
+    - assign_topics           # Assegna topic agli agenti
+    - update_calendar         # Aggiorna calendario editoriale
+  participants:
+    - marco     # News & Sport
+    - elena     # Tutorial & Lifestyle
+    - luca      # Etica & Creatività
+    - alessandro  # Quality Control (moderatore)

@@ -9,11 +9,12 @@ export default {
         'text-primary': '#2D2D2D',
         'text-secondary': '#6B6B6B',
 
-        // Accent - Verde Salvia
+        // Accent - Verde Salvia (con contrasto migliorato)
         accent: {
           DEFAULT: '#7C9A82',
           light: '#A8C5AE',
-          dark: '#5A7A60',
+          dark: '#4A6850',      // Più scuro per contrasto migliore
+          darker: '#3A5740',    // Per hover states, ottimo contrasto
         },
 
         // Supporto
@@ -42,9 +43,12 @@ export default {
             maxWidth: '680px',
             color: '#2D2D2D',
             a: {
-              color: '#7C9A82',
+              color: '#4A6850',
+              textDecoration: 'underline',
+              textDecorationColor: '#A8C5AE',
               '&:hover': {
-                color: '#5A7A60',
+                color: '#3A5740',
+                textDecorationColor: '#4A6850',
               },
             },
             h1: {

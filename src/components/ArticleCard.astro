@@ -18,6 +18,10 @@ const categoryLabels: Record<string, string> = {
   'finanza': 'Finanza & Lavoro',
   'psicologia': 'Psicologia',
   'ecosostenibile': 'IA Ecosostenibile',
+  'sport': 'IA & Sport',
+  'salute': 'IA & Salute',
+  'creativita': 'IA & Creatività',
+  'quotidiano': 'Vita Quotidiana',
 };
 
 const authorNames: Record<string, string> = {
@@ -48,7 +52,7 @@ const formattedDate = new Date(publishedAt).toLocaleDateString('it-IT', {
   <div class="flex items-center gap-3 mb-3">
     <a
       href={`/categoria/${category}`}
-      class="text-xs font-medium text-accent-dark uppercase tracking-wide hover:text-accent"
+      class="text-xs font-medium text-accent-darker uppercase tracking-wide hover:underline"
     >
       {categoryLabels[category] || category}
     </a>
@@ -58,7 +62,7 @@ const formattedDate = new Date(publishedAt).toLocaleDateString('it-IT', {
     </time>
   </div>
 
-  <h2 class="text-xl font-serif font-semibold mb-2 group-hover:text-accent transition-colors">
+  <h2 class="text-xl font-serif font-semibold mb-2 group-hover:text-accent-dark transition-colors">
     <a href={`/articolo/${slug}`}>{title}</a>
   </h2>
 
@@ -81,7 +85,7 @@ const formattedDate = new Date(publishedAt).toLocaleDateString('it-IT', {
 
     <a
       href={`/articolo/${slug}`}
-      class="text-sm font-medium text-accent hover:text-accent-dark inline-flex items-center gap-1"
+      class="text-sm font-medium text-accent-dark hover:text-accent-darker hover:underline inline-flex items-center gap-1"
     >
       Leggi
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -28,10 +28,29 @@ const categoryLabels: Record<string, { label: string; description: string }> = {
     label: 'IA Ecosostenibile',
     description: 'Come l\'intelligenza artificiale può aiutare a combattere il cambiamento climatico',
   },
+  'sport': {
+    label: 'IA & Sport',
+    description: 'Analytics sportive, ottimizzazione delle performance, eSports e allenamento intelligente',
+  },
+  'salute': {
+    label: 'IA & Salute',
+    description: 'Diagnostica assistita, medicina personalizzata, benessere e prevenzione',
+  },
+  'creativita': {
+    label: 'IA & Creatività',
+    description: 'Arte generativa, musica, scrittura assistita, design e nuove forme di espressione',
+  },
+  'quotidiano': {
+    label: 'Vita Quotidiana',
+    description: 'Smart home, assistenti vocali, app intelligenti e automazione domestica',
+  },
 };
 
 export async function getStaticPaths() {
-  const categories = ['ia-etica', 'tech', 'tutorial', 'finanza', 'psicologia', 'ecosostenibile'];
+  const categories = [
+    'ia-etica', 'tech', 'tutorial', 'finanza', 'psicologia', 'ecosostenibile',
+    'sport', 'salute', 'creativita', 'quotidiano'
+  ];
 
   return categories.map((categoria) => ({
     params: { categoria },
@@ -54,7 +73,7 @@ const categoryArticles = allArticles
 <BaseLayout title={categoryInfo.label} description={categoryInfo.description}>
   <section class="container-site py-12 md:py-16">
     <div class="max-w-3xl mb-12">
-      <a href="/" class="text-accent hover:text-accent-dark text-sm mb-4 inline-block">&larr; Torna alla home</a>
+      <a href="/" class="text-accent-dark hover:text-accent-darker hover:underline text-sm mb-4 inline-block">&larr; Torna alla home</a>
       <h1 class="text-4xl md:text-5xl font-serif mb-4">{categoryInfo.label}</h1>
       <p class="text-xl text-text-secondary">{categoryInfo.description}</p>
     </div>

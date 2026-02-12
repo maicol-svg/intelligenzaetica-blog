@@ -24,6 +24,10 @@ const categories = [
   { slug: 'ia-etica', label: 'IA & Etica', description: 'Impatto sociale, regolamentazioni, uso responsabile' },
   { slug: 'tech', label: 'Tech & Innovazione', description: 'Novità, startup, prodotti, trend' },
   { slug: 'tutorial', label: 'Tutorial & Guide', description: 'Come usare strumenti IA nella pratica' },
+  { slug: 'sport', label: 'IA & Sport', description: 'Analytics, performance, eSports e allenamento' },
+  { slug: 'salute', label: 'IA & Salute', description: 'Diagnostica, medicina, benessere personale' },
+  { slug: 'creativita', label: 'IA & Creatività', description: 'Arte, musica, scrittura, design generativo' },
+  { slug: 'quotidiano', label: 'Vita Quotidiana', description: 'Smart home, assistenti vocali, app intelligenti' },
   { slug: 'ecosostenibile', label: 'IA Ecosostenibile', description: 'Sostenibilità e cambiamento climatico' },
   { slug: 'psicologia', label: 'Psicologia & IA', description: 'Mente, comportamento, benessere digitale' },
   { slug: 'finanza', label: 'Finanza & Lavoro', description: 'Trasformazione del lavoro e finanza' },
@@ -72,7 +76,7 @@ const formatDate = (date: string | Date) => {
               </time>
             </div>
 
-            <h2 class="text-3xl md:text-4xl font-serif font-semibold mb-4 group-hover:text-accent transition-colors">
+            <h2 class="text-3xl md:text-4xl font-serif font-semibold mb-4 group-hover:text-accent-dark transition-colors">
               <a href={`/articolo/${featuredArticle.slug}`}>{featuredArticle.data.title}</a>
             </h2>
 
@@ -141,8 +145,8 @@ const formatDate = (date: string | Date) => {
 
     <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
       {categories.map((cat) => (
-        <a href={`/categoria/${cat.slug}`} class="card group text-center hover:border-accent">
-          <h3 class="font-serif text-lg font-medium mb-2 group-hover:text-accent transition-colors">
+        <a href={`/categoria/${cat.slug}`} class="card group text-center hover:border-accent-dark">
+          <h3 class="font-serif text-lg font-medium mb-2 group-hover:text-accent-dark transition-colors">
             {cat.label}
           </h3>
           <p class="text-sm text-text-secondary">{cat.description}</p>
@@ -158,11 +162,15 @@ const formatDate = (date: string | Date) => {
       <p class="text-text-secondary mb-8 max-w-lg mx-auto">
         Ricevi i migliori articoli sull'intelligenza artificiale direttamente nella tua inbox. Niente spam, solo contenuti di valore.
       </p>
-      <form class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+      <form class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto" aria-label="Iscrizione alla newsletter">
+        <label for="newsletter-email" class="sr-only">Indirizzo email</label>
         <input
+          id="newsletter-email"
           type="email"
           placeholder="La tua email"
-          class="flex-1 px-4 py-3 rounded-lg border border-border bg-card-bg focus:outline-none focus:border-accent"
+          required
+          aria-required="true"
+          class="flex-1 px-4 py-3 rounded-lg border border-border bg-card-bg focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent"
         />
         <button type="submit" class="btn-primary whitespace-nowrap">
           Iscriviti

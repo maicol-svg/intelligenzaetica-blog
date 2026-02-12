@@ -2,6 +2,7 @@
 import BaseLayout from './BaseLayout.astro';
 import AuthorCard from '../components/AuthorCard.astro';
 import AIDisclosure from '../components/AIDisclosure.astro';
+import SocialShare from '../components/SocialShare.astro';
 
 interface Props {
   title: string;
@@ -34,6 +35,10 @@ const categoryLabels: Record<string, string> = {
   'finanza': 'Finanza & Lavoro',
   'psicologia': 'Psicologia',
   'ecosostenibile': 'IA Ecosostenibile',
+  'sport': 'IA & Sport',
+  'salute': 'IA & Salute',
+  'creativita': 'IA & Creatività',
+  'quotidiano': 'Vita Quotidiana',
 };
 
 const formattedDate = new Date(publishedAt).toLocaleDateString('it-IT', {
@@ -41,6 +46,9 @@ const formattedDate = new Date(publishedAt).toLocaleDateString('it-IT', {
   month: 'long',
   year: 'numeric',
 });
+
+// Costruisci URL completo per la condivisione
+const articleUrl = new URL(Astro.url.pathname, Astro.site).toString();
 ---
 
 <BaseLayout title={title} description={description} image={featuredImage}>
@@ -51,7 +59,7 @@ const formattedDate = new Date(publishedAt).toLocaleDateString('it-IT', {
         <div class="flex items-center gap-3 mb-6">
           <a
             href={`/categoria/${category}`}
-            class="text-sm font-medium text-accent-dark uppercase tracking-wide hover:text-accent"
+            class="text-sm font-medium text-accent-darker uppercase tracking-wide hover:underline"
           >
             {categoryLabels[category] || category}
           </a>
@@ -104,6 +112,13 @@ const formattedDate = new Date(publishedAt).toLocaleDateString('it-IT', {
         </div>
       </div>
     )}
+
+    <!-- Social Share -->
+    <div class="container-site pb-8">
+      <div class="content-container border-t border-border pt-6">
+        <SocialShare title={title} url={articleUrl} description={description} />
+      </div>
+    </div>
 
     <!-- AI Disclosure -->
     <div class="container-site pb-12">
