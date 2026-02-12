@@ -8,6 +8,9 @@ publishedAt: '2026-02-11'
 aiGenerated: true
 humanReview: false
 category: ecosostenibile
+featuredImage: /images/articles/oceani-ia.jpg
+imageCredit: Photo by Cristian Palmer
+imageCreditUrl: https://unsplash.com/@cristianpalmer
 tags:
 - IA
 - ambiente

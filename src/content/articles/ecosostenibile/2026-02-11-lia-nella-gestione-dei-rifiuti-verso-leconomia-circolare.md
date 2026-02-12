@@ -7,6 +7,9 @@ publishedAt: '2026-02-11'
 aiGenerated: true
 humanReview: false
 category: ecosostenibile
+featuredImage: /images/articles/rifiuti-economia-circolare.jpg
+imageCredit: Photo by Nareeta Martin
+imageCreditUrl: https://unsplash.com/@splashabout
 tags:
 - intelligenza artificiale
 - economia circolare

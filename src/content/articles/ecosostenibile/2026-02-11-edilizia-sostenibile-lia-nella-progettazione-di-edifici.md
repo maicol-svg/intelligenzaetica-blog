@@ -7,7 +7,7 @@ publishedAt: '2026-02-11'
 aiGenerated: true
 humanReview: false
 category: ecosostenibile
-featuredImage: /images/articles/2026-02-11-edilizia-sostenibile-ia-progettazione-edifici-verdi.jpg
+featuredImage: /images/articles/edilizia-sostenibile.jpg
 imageCredit: Photo by Markus Winkler
 imageCreditUrl: https://unsplash.com/@markuswinkler
 ---

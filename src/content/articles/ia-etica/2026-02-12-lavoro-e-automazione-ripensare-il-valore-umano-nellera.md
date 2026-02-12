@@ -16,7 +16,7 @@ imageCreditUrl: https://unsplash.com/@julientromeur
 
 Immagina un mondo in cui gran parte del lavoro che svolgiamo oggi viene automatizzato. Le catene di montaggio gestite da robot, i call center sostituiti da chatbot avanzati, persino i lavori di concetto come la contabilità o la consulenza legale affidati a sistemi di intelligenza artificiale. Questa prospettiva, un tempo fantascientifica, sta diventando sempre più concreta e attuale.
 
-Secondo uno studio del World Economic Forum, entro il 2025 l'automazione potrebbe sostituire 85 milioni di posti di lavoro a livello globale, mentre ne creerà 97 milioni di nuovi. Questi numeri evidenziano una trasformazione epocale che richiede una riflessione profonda sul futuro del lavoro umano.
+Secondo uno studio del World Economic Forum del 2020, l'automazione avrebbe dovuto sostituire 85 milioni di posti di lavoro entro il 2025, creandone 97 milioni di nuovi. I dati più recenti confermano che questa trasformazione è in corso: nel 2026, l'automazione ha già ridefinito interi settori lavorativi, richiedendo una riflessione profonda sul futuro del lavoro umano.
 
 ### L'impatto settoriale dell'automazione
 
