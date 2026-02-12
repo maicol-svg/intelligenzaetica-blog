@@ -17,15 +17,15 @@
   }
 
   h1, h2, h3, h4 {
-    @apply font-serif;
+    @apply font-serif tracking-tight;
   }
 
   h1 {
-    @apply text-4xl md:text-5xl font-semibold leading-tight;
+    @apply text-4xl md:text-5xl font-semibold leading-tight tracking-tight;
   }
 
   h2 {
-    @apply text-3xl md:text-4xl font-semibold leading-tight;
+    @apply text-3xl md:text-4xl font-semibold leading-tight tracking-tight;
   }
 
   h3 {
@@ -60,7 +60,8 @@
   /* Card */
   .card {
     @apply bg-card-bg border border-border rounded-lg p-6
-           transition-shadow duration-300 hover:shadow-md;
+           transition-all duration-300 hover:shadow-lg hover:border-accent/30
+           hover:-translate-y-0.5;
   }
 
   /* Badge IA */
@@ -76,7 +77,7 @@
   }
 
   .btn-primary {
-    @apply btn bg-accent-dark text-white hover:bg-accent-darker
+    @apply btn bg-accent-dark text-white hover:bg-accent-darker hover:text-white
            focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2;
   }
 
@@ -148,5 +149,21 @@
 
   .prose-article img {
     @apply rounded-lg my-8;
+  }
+}
+
+/* Accessibilità: rispetta le preferenze di movimento ridotto */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .fade-in {
+    animation: none;
   }
 }
