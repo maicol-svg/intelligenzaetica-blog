@@ -10,6 +10,14 @@ Uso:
     python orchestrator.py publish --file "path/to/draft.md"
     python orchestrator.py list-drafts
     python orchestrator.py auto --count 2
+
+Workflow con Quality Control:
+    1. Giornalista scrive l'articolo
+    2. Sofia (Editor) revisiona per stile e SEO
+    3. Alessandro (QC) controlla qualità, fatti, date
+    4. Se QC fallisce → torna al giornalista per revisione
+    5. Ciclo si ripete max 3 volte
+    6. Dopo 3 fallimenti → review umana
 """
 
 import argparse
@@ -43,6 +51,142 @@ def get_agent_for_category(config: dict, category: str) -> str:
     return "marco"  # Default
 
 
+def quality_control_article(
+    article: str,
+    client: ClaudeClient,
+    config: dict,
+) -> dict:
+    """
+    Esegue il controllo qualità su un articolo usando Alessandro.
+
+    Args:
+        article: Articolo da controllare
+        client: Client Claude
+        config: Configurazione
+
+    Returns:
+        Risultato del QC con decision, quality_score, blocking_issues, etc.
+    """
+    qc_config = config.get("quality_control", {})
+    if not qc_config.get("enabled", True):
+        # QC disabilitato, approva automaticamente
+        return {
+            "decision": "APPROVED",
+            "quality_score": 8,
+            "blocking_issues": [],
+            "positive_aspects": ["Quality control disabilitato"],
+            "summary": "Articolo approvato (QC disabilitato)."
+        }
+
+    # Carica il prompt di Alessandro
+    qc_prompt = client.load_prompt("prompts/alessandro.md")
+
+    # Data corrente per validazione temporale
+    current_date = datetime.now().strftime("%d %B %Y")  # Es: "12 febbraio 2026"
+
+    result = client.quality_control(
+        qc_prompt=qc_prompt,
+        article=article,
+        current_date=current_date,
+        model="sonnet",
+        temperature=0.2,
+    )
+
+    return result
+
+
+def revision_loop(
+    article: str,
+    agent: str,
+    client: ClaudeClient,
+    publisher: ArticlePublisher,
+    config: dict,
+) -> tuple[str, dict]:
+    """
+    Ciclo di revisione: se QC fallisce, manda al giornalista per correzioni.
+
+    Args:
+        article: Articolo da revisionare
+        agent: Nome dell'agente giornalista originale
+        client: Client Claude
+        publisher: Publisher per parsing
+        config: Configurazione
+
+    Returns:
+        Tupla (articolo_finale, qc_result)
+    """
+    qc_config = config.get("quality_control", {})
+    max_cycles = qc_config.get("max_revision_cycles", 3)
+
+    agent_config = config["agents"].get(agent)
+    agent_prompt = client.load_prompt(agent_config["prompt_file"])
+
+    current_article = article
+
+    for cycle in range(max_cycles):
+        print(f"\n🔍 Quality Control - Ciclo {cycle + 1}/{max_cycles}")
+
+        # Esegui QC
+        qc_result = quality_control_article(current_article, client, config)
+
+        decision = qc_result.get("decision", "NEEDS_REVISION")
+        quality_score = qc_result.get("quality_score", 0)
+
+        print(f"   Decisione: {decision}")
+        print(f"   Quality Score: {quality_score}/10")
+
+        if decision == "APPROVED":
+            print("✅ Articolo approvato da Alessandro!")
+            return current_article, qc_result
+
+        if decision == "REJECTED":
+            print("❌ Articolo RIFIUTATO - Richiede riscrittura completa")
+            rejection_reason = qc_result.get("rejection_reason", "Qualità insufficiente")
+            print(f"   Motivo: {rejection_reason}")
+
+            # Per REJECTED, proviamo comunque una revisione
+            blocking_issues = qc_result.get("blocking_issues", [])
+            revision_instructions = qc_result.get(
+                "revision_instructions",
+                f"L'articolo è stato rifiutato: {rejection_reason}. Riscrivi completamente."
+            )
+
+        else:  # NEEDS_REVISION
+            print("⚠️  Articolo richiede revisione")
+            blocking_issues = qc_result.get("blocking_issues", [])
+            revision_instructions = qc_result.get("revision_instructions", "Correggi i problemi indicati.")
+
+            if blocking_issues:
+                print("   Problemi bloccanti:")
+                for issue in blocking_issues[:3]:  # Mostra max 3
+                    print(f"      - [{issue.get('severity')}] {issue.get('problem', 'N/A')[:60]}...")
+
+        # Se è l'ultimo ciclo, non revisionare - vai a human review
+        if cycle == max_cycles - 1:
+            print(f"\n⚠️  Raggiunto limite massimo di revisioni ({max_cycles})")
+            qc_result["decision"] = "NEEDS_HUMAN_REVIEW"
+            qc_result["human_review_reason"] = f"Articolo non approvato dopo {max_cycles} revisioni"
+            return current_article, qc_result
+
+        # Chiedi al giornalista di revisionare
+        print(f"\n📝 Invio articolo a {agent_config['name']} per revisione...")
+
+        revised_article = client.revise_article(
+            agent_prompt=agent_prompt,
+            original_article=current_article,
+            revision_instructions=revision_instructions,
+            blocking_issues=blocking_issues,
+            model="haiku",
+            temperature=0.5,
+        )
+
+        current_article = revised_article
+        print(f"   ✅ {agent_config['name']} ha revisionato l'articolo")
+
+    # Fallback (non dovrebbe arrivarci)
+    return current_article, qc_result
+
+
 def generate_article(
     topic: str,
     category: str,
@@ -50,9 +194,10 @@ def generate_article(
     context: str | None = None,
     as_draft: bool = True,
     fetch_image: bool = True,
-) -> Path:
+    skip_qc: bool = False,
+) -> tuple[Path, dict]:
     """
-    Genera un nuovo articolo.
+    Genera un nuovo articolo con ciclo completo di QC.
 
     Args:
         topic: Argomento dell'articolo
@@ -61,9 +206,10 @@ def generate_article(
         context: Contesto aggiuntivo (es. fonte della notizia)
         as_draft: Se True, salva come bozza
         fetch_image: Se True, recupera un'immagine da Unsplash
+        skip_qc: Se True, salta il controllo qualità
 
     Returns:
-        Path del file creato
+        Tupla (Path del file creato, risultato QC)
     """
     config = load_config()
     client = ClaudeClient()
@@ -94,7 +240,26 @@ def generate_article(
         temperature=config["api"]["temperature"]["writer"],
     )
 
-    # Salva l'articolo (prima senza immagine)
+    print("✅ Articolo generato")
+
+    # Quality Control con ciclo di revisione
+    qc_result = {"decision": "APPROVED", "quality_score": 8}
+
+    if not skip_qc:
+        final_article, qc_result = revision_loop(
+            article=article,
+            agent=agent,
+            client=client,
+            publisher=publisher,
+            config=config,
+        )
+        article = final_article
+
+        if qc_result.get("decision") == "NEEDS_HUMAN_REVIEW":
+            print("\n⚠️  ATTENZIONE: Articolo richiede review umana prima della pubblicazione")
+            as_draft = True  # Forza come draft
+
+    # Salva l'articolo
     file_path = publisher.save_article(article, category=category, as_draft=as_draft)
 
     # Recupera immagine da Unsplash
@@ -121,6 +286,11 @@ def generate_article(
             frontmatter["imageCredit"] = f"Photo by {image_info['author']}"
             frontmatter["imageCreditUrl"] = image_info["author_url"]
 
+            # Aggiungi flag di review umana se necessario
+            if qc_result.get("decision") == "NEEDS_HUMAN_REVIEW":
+                frontmatter["humanReview"] = True
+                frontmatter["qcNotes"] = qc_result.get("summary", "Richiede review umana")
+
             # Riscrivi il file con frontmatter aggiornato
             frontmatter_str = yaml.dump(
                 frontmatter, allow_unicode=True, default_flow_style=False, sort_keys=False
@@ -133,7 +303,15 @@ def generate_article(
             print("⚠️  Nessuna immagine trovata (articolo salvato senza immagine)")
 
     print(f"✅ Articolo salvato: {file_path}")
-    return file_path
+
+    # Stampa riepilogo QC
+    print(f"\n📊 Riepilogo Quality Control:")
+    print(f"   Decisione: {qc_result.get('decision', 'N/A')}")
+    print(f"   Quality Score: {qc_result.get('quality_score', 'N/A')}/10")
+    if qc_result.get("positive_aspects"):
+        print(f"   Aspetti positivi: {', '.join(qc_result['positive_aspects'][:3])}")
+
+    return file_path, qc_result
 
 
 def review_article(file_path: Path, auto_fix: bool = True) -> dict:
@@ -236,13 +414,14 @@ def list_drafts():
         print(f"   - {draft.relative_to(publisher.drafts_path)}")
 
 
-def auto_generate(count: int = 2, publish: bool = False):
+def auto_generate(count: int = 2, publish: bool = False, skip_qc: bool = False):
     """
     Genera automaticamente articoli per diverse categorie.
 
     Args:
         count: Numero di articoli da generare
-        publish: Se True, pubblica automaticamente dopo la revisione
+        publish: Se True, pubblica automaticamente dopo QC approvato
+        skip_qc: Se True, salta il controllo qualità
     """
     config = load_config()
 
@@ -275,28 +454,66 @@ def auto_generate(count: int = 2, publish: bool = False):
     ]
 
     print(f"🤖 Generazione automatica di {count} articoli...")
+    if skip_qc:
+        print("⚠️  Quality Control disabilitato!")
+
+    results = {"approved": 0, "needs_human_review": 0, "failed": 0}
 
     for i, topic_data in enumerate(sample_topics[:count]):
-        print(f"\n--- Articolo {i + 1}/{count} ---")
+        print(f"\n{'='*60}")
+        print(f"📰 Articolo {i + 1}/{count}")
+        print(f"{'='*60}")
 
         try:
-            # Genera
-            draft_path = generate_article(
+            # Genera con ciclo QC integrato
+            draft_path, qc_result = generate_article(
                 topic=topic_data["topic"],
                 category=topic_data["category"],
                 as_draft=True,
+                skip_qc=skip_qc,
             )
 
-            # Revisiona
-            review_result = review_article(draft_path, auto_fix=True)
+            decision = qc_result.get("decision", "APPROVED")
 
-            # Pubblica se richiesto e approvato
-            if publish and review_result["status"] == "approved":
-                publish_article(draft_path, commit=True)
+            if decision == "APPROVED":
+                results["approved"] += 1
+
+                # Pubblica se richiesto e approvato dal QC
+                if publish:
+                    print("\n📤 Pubblicazione articolo approvato...")
+                    publish_article(draft_path, commit=False)
+
+            elif decision == "NEEDS_HUMAN_REVIEW":
+                results["needs_human_review"] += 1
+                print(f"⚠️  Articolo salvato come bozza - richiede review umana")
+
+            else:
+                results["failed"] += 1
+                print(f"❌ Articolo non approvato: {decision}")
 
         except Exception as e:
             print(f"❌ Errore: {e}")
+            results["failed"] += 1
             continue
+
+    # Riepilogo finale
+    print(f"\n{'='*60}")
+    print("📊 RIEPILOGO GENERAZIONE")
+    print(f"{'='*60}")
+    print(f"   ✅ Approvati: {results['approved']}")
+    print(f"   ⚠️  Review umana: {results['needs_human_review']}")
+    print(f"   ❌ Falliti: {results['failed']}")
+
+    # Commit unico se pubblicati
+    if publish and results["approved"] > 0:
+        publisher = ArticlePublisher()
+        success = publisher.git_commit_and_push(
+            f"📝 Nuovo articolo pubblicato automaticamente"
+        )
+        if success:
+            print("\n✅ Modifiche pushate su GitHub")
+        else:
+            print("\n⚠️  Errore nel push su GitHub")
 
     print("\n✅ Generazione completata!")
 
@@ -323,6 +540,9 @@ def main():
     )
     gen_parser.add_argument(
         "--from-scheduler", action="store_true", help="Usa lo scheduler per determinare cosa generare"
+    )
+    gen_parser.add_argument(
+        "--skip-qc", action="store_true", help="Salta il controllo qualità (non raccomandato)"
     )
 
     # Comando: review
@@ -351,6 +571,9 @@ def main():
     )
     auto_parser.add_argument(
         "--publish", action="store_true", help="Pubblica automaticamente"
+    )
+    auto_parser.add_argument(
+        "--skip-qc", action="store_true", help="Salta il controllo qualità (non raccomandato)"
     )
 
     args = parser.parse_args()
@@ -385,13 +608,18 @@ def main():
             print("❌ Topic richiesto (--topic) o non disponibile nello scheduler")
             return
 
-        generate_article(
+        file_path, qc_result = generate_article(
             topic=topic,
             category=category,
             agent=agent,
             context=args.context,
             as_draft=not args.publish,
+            skip_qc=args.skip_qc,
         )
+
+        # Se pubblicazione richiesta e approvato, pubblica
+        if args.publish and qc_result.get("decision") == "APPROVED":
+            publish_article(file_path, commit=True)
 
     elif args.command == "review":
         if args.file:
@@ -438,7 +666,7 @@ def main():
         list_drafts()
 
     elif args.command == "auto":
-        auto_generate(count=args.count, publish=args.publish)
+        auto_generate(count=args.count, publish=args.publish, skip_qc=args.skip_qc)
 
 
 if __name__ == "__main__":

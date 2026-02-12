@@ -52,6 +52,18 @@ agents:
     style: "preciso, ottimizzato, professionale"
     prompt_file: "prompts/sofia.md"
 
+  alessandro:
+    name: "Alessandro"
+    role: "Quality Controller IA"
+    specializations:
+      - "quality_control"
+      - "fact_checking"
+      - "temporal_validation"
+    style: "rigoroso, meticoloso, imparziale"
+    prompt_file: "prompts/alessandro.md"
+    # Alessandro è l'ultima linea di difesa prima della pubblicazione
+    # Se rifiuta un articolo, questo torna al giornalista originale
+
 # Categorie
 categories:
   ia-etica:
@@ -112,6 +124,14 @@ limits:
   min_words: 800
   max_words: 2000
   articles_per_day: 2
+
+# Quality Control (Alessandro)
+quality_control:
+  enabled: true
+  max_revision_cycles: 3  # Massimo tentativi di revisione
+  min_quality_score: 7    # Score minimo per approvazione
+  auto_reject_on_temporal_error: true  # Rifiuta automaticamente errori temporali
+  # Se un articolo viene rifiutato 3 volte, va in review umana
 
 # Notifiche
 notifications:

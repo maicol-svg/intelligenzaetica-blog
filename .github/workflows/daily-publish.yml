@@ -49,34 +49,25 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r agents/requirements.txt
 
-      - name: Generate article
+      - name: Generate article with Quality Control
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           UNSPLASH_ACCESS_KEY: ${{ secrets.UNSPLASH_ACCESS_KEY }}
           FORCE_CATEGORY: ${{ github.event.inputs.force_category }}
         run: |
           cd agents
+          echo "🤖 Generazione articolo con Quality Control integrato"
+          echo "   - Giornalista scrive"
+          echo "   - Alessandro (QC) controlla qualità, fatti, date"
+          echo "   - Se QC fallisce → revisione automatica (max 3 cicli)"
+          echo ""
           if [ -n "$FORCE_CATEGORY" ]; then
-            echo "Forzando categoria: $FORCE_CATEGORY"
-            python orchestrator.py generate --category "$FORCE_CATEGORY"
+            echo "📂 Forzando categoria: $FORCE_CATEGORY"
+            python orchestrator.py generate --category "$FORCE_CATEGORY" --publish
           else
-            echo "Usando scheduler automatico"
-            python orchestrator.py generate
+            echo "📅 Usando scheduler automatico"
+            python orchestrator.py generate --publish
           fi
-
-      - name: Run editor review
-        env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: |
-          cd agents
-          python orchestrator.py review
-
-      - name: Publish approved articles
-        env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: |
-          cd agents
-          python orchestrator.py publish --no-commit
 
       - name: Commit and push changes
         run: |
@@ -98,7 +89,8 @@ jobs:
           else
             git commit -m "📝 Nuovo articolo pubblicato automaticamente
 
-          🤖 Generato con [Claude AI](https://anthropic.com)
+          🤖 Generato e verificato con Quality Control
+          ✅ Approvato da Alessandro (QC)
           ⏰ $(date +'%Y-%m-%d %H:%M') CET"
 
             # Pull con rebase per evitare conflitti

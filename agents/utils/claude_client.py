@@ -172,6 +172,155 @@ ARTICOLO DA REVISIONARE:
                 "revised_article": article,
             }
 
+    def quality_control(
+        self,
+        qc_prompt: str,
+        article: str,
+        current_date: str,
+        model: str = "sonnet",
+        max_tokens: int = 3000,
+        temperature: float = 0.2,
+    ) -> dict:
+        """
+        Esegue il controllo qualità su un articolo usando Alessandro.
+
+        Args:
+            qc_prompt: System prompt del Quality Controller (con placeholder {current_date})
+            article: Articolo da controllare
+            current_date: Data corrente per validazione temporale (formato YYYY-MM-DD)
+            model: Modello da usare (default: sonnet per precisione)
+            max_tokens: Numero massimo di token
+            temperature: Temperatura (molto bassa per rigore)
+
+        Returns:
+            Dizionario con decision, quality_score, blocking_issues, revision_instructions
+        """
+        import json
+
+        model_id = self.models.get(model, self.models["sonnet"])
+
+        # Sostituisci il placeholder della data nel prompt
+        prompt_with_date = qc_prompt.replace("{current_date}", current_date)
+
+        user_message = f"""Esegui il controllo qualità sul seguente articolo.
+Restituisci il risultato ESCLUSIVAMENTE in formato JSON come specificato nelle tue istruzioni.
+
+ARTICOLO DA CONTROLLARE:
+
+{article}
+"""
+
+        response = self.client.messages.create(
+            model=model_id,
+            max_tokens=max_tokens,
+            temperature=temperature,
+            system=prompt_with_date,
+            messages=[{"role": "user", "content": user_message}],
+        )
+
+        response_text = response.content[0].text
+
+        # Estrai il JSON dalla risposta
+        try:
+            json_start = response_text.find("{")
+            json_end = response_text.rfind("}") + 1
+            if json_start != -1 and json_end > json_start:
+                json_str = response_text[json_start:json_end]
+                return json.loads(json_str)
+            else:
+                # Fallback conservativo: richiedi revisione
+                return {
+                    "decision": "NEEDS_REVISION",
+                    "quality_score": 5,
+                    "blocking_issues": [{
+                        "type": "quality",
+                        "severity": "major",
+                        "location": "Generale",
+                        "problem": "Impossibile analizzare l'articolo",
+                        "fix_suggestion": "Rivedere la struttura dell'articolo"
+                    }],
+                    "revision_instructions": "Rivedere l'articolo e ripresentarlo per il controllo qualità.",
+                    "positive_aspects": [],
+                    "summary": "Controllo qualità fallito - riprovare."
+                }
+        except json.JSONDecodeError:
+            return {
+                "decision": "NEEDS_REVISION",
+                "quality_score": 5,
+                "blocking_issues": [{
+                    "type": "quality",
+                    "severity": "major",
+                    "location": "Generale",
+                    "problem": "Errore nel parsing della risposta QC",
+                    "fix_suggestion": "Riprovare il controllo qualità"
+                }],
+                "revision_instructions": "Si prega di ripresentare l'articolo per un nuovo controllo.",
+                "positive_aspects": [],
+                "summary": "Errore tecnico nel controllo qualità."
+            }
+
+    def revise_article(
+        self,
+        agent_prompt: str,
+        original_article: str,
+        revision_instructions: str,
+        blocking_issues: list,
+        model: str = "haiku",
+        max_tokens: int = 4000,
+        temperature: float = 0.5,
+    ) -> str:
+        """
+        Chiede al giornalista di riscrivere l'articolo basandosi sul feedback del QC.
+
+        Args:
+            agent_prompt: System prompt del giornalista originale
+            original_article: Articolo originale da revisionare
+            revision_instructions: Istruzioni di revisione da Alessandro
+            blocking_issues: Lista dei problemi bloccanti
+            model: Modello da usare
+            max_tokens: Numero massimo di token
+            temperature: Temperatura
+
+        Returns:
+            Articolo revisionato in formato Markdown con frontmatter
+        """
+        model_id = self.models.get(model, self.models["haiku"])
+
+        # Formatta i problemi bloccanti
+        issues_text = "\n".join([
+            f"- [{issue.get('severity', 'major')}] {issue.get('location', 'N/A')}: {issue.get('problem', 'N/A')}\n  Suggerimento: {issue.get('fix_suggestion', 'N/A')}"
+            for issue in blocking_issues
+        ])
+
+        user_message = f"""Il tuo articolo NON ha superato il controllo qualità. Devi riscriverlo seguendo le istruzioni.
+
+ARTICOLO ORIGINALE:
+{original_article}
+
+PROBLEMI RISCONTRATI:
+{issues_text}
+
+ISTRUZIONI DI REVISIONE:
+{revision_instructions}
+
+IMPORTANTE:
+- Correggi TUTTI i problemi indicati
+- Mantieni la struttura e i punti positivi dell'articolo originale
+- Assicurati che tutte le date e i riferimenti temporali siano corretti rispetto ad OGGI
+- Restituisci l'articolo completo con frontmatter YAML
+
+Riscrivi l'articolo correggendo tutti i problemi indicati."""
+
+        response = self.client.messages.create(
+            model=model_id,
+            max_tokens=max_tokens,
+            temperature=temperature,
+            system=agent_prompt,
+            messages=[{"role": "user", "content": user_message}],
+        )
+
+        return response.content[0].text
+
     def summarize_news(
         self,
         news_content: str,
